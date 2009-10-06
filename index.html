@@ -1,1 +1,88 @@
-My GitHub Page
+<!DOCTYPE HTML>
+
+<html>
+<head>
+  <title>Typun</title>
+  <style type="text/css">
+    body {
+      padding: 1em;
+    }
+    #text,
+    #type_area {
+      font: 24px/36px sans-serif;
+    }
+    #text {
+      color: #000;
+      white-space: pre-wrap;
+      margin-bottom: 1em;
+    }
+    #type_area {
+      width: 100%;
+    }
+    del {
+      background: red;
+      color: white;
+      text-decoration: none;
+    }
+    #done {
+      color: #CCC;
+    }
+    #correct_letters_counter {
+      display: inline-block;
+      background: #CCC;
+      border-right: 1px solid #999;
+      max-width: 100%;
+      -webkit-transition: width 2s linear;
+    }
+  </style>
+</head>
+<body>
+
+<div id="text">Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, `and what is the use of a book,' thought Alice `without pictures or conversation?'</div>
+
+<textarea rows="4" cols="40" id="type_area"></textarea>
+
+<p>
+  Typos: <span id="typos_counter">0</span><br/>
+  Speed (letter per minutes): <span id="correct_letters_counter">0</span>
+</p>
+
+<script type="text/javascript">
+window.onload = function(){
+  var text = document.getElementById('text');
+  var type_area = document.getElementById('type_area');
+  var typos_counter = document.getElementById('typos_counter');
+  var typos = 0;
+  var correct_letters = 0;
+  var correct_letters_counter = document.getElementById('correct_letters_counter');
+
+  var speed_timer = false;
+  var started_at;
+  
+  text.innerHTML = '<div id="done"></div><div id="undone">' + text.innerHTML + '</div>';
+
+  type_area.onkeyup = function(){
+    if (!speed_timer) {
+      started_at = new Date();
+      speed_timer = setInterval(function(){
+        correct_letters = parseInt(document.getElementById('done').textContent.length / ((new Date() - started_at) / 60000));
+        correct_letters_counter.innerHTML = correct_letters;
+        correct_letters_counter.style.width = correct_letters + 'px';
+      }, 2000);
+    }
+    if (text.textContent.indexOf(type_area.value) == 0) {
+      text.innerHTML = text.textContent.replace(type_area.value, '<span id="done">'+ type_area.value +'</span><span id="undone">') +'</span>';
+    } else {
+      var errors_count = type_area.value.length - document.getElementById('done').textContent.length;
+      if (errors_count) {
+        var undone = document.getElementById('undone');
+        undone.innerHTML = '<del>'+ undone.textContent.substr(0, errors_count) +'</del>' + undone.textContent.substr(errors_count);
+        typos_counter.innerHTML = ++typos;
+      }
+    }
+  };
+  type_area.focus();
+  type_area.select();
+};
+</script>
+</body></html>
