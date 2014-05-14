@@ -3,58 +3,23 @@
 <html>
 <head>
   <title>Typun</title>
+  <link rel="stylesheet" href="style.css">
   <style type="text/css">
-    body {
-      padding: 1em;
-    }
-    #text,
-    #type_area {
-      font: 24px/36px sans-serif;
-    }
-    #text {
-      color: #000;
-      white-space: pre-wrap;
-      margin-bottom: 1em;
-    }
-    #type_area {
-      width: 100%;
-    }
-    del {
-      background: red;
-      color: white;
-      text-decoration: none;
-    }
-    #done {
-      color: #CCC;
-    }
   </style>
 </head>
 <body>
 
-<div id="text">Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, `and what is the use of a book,' thought Alice `without pictures or conversation?'</div>
+<button id="edit">Edit</button>
 
-<textarea rows="4" cols="40" id="type_area"></textarea>
+<div id="wrap">
+	<div id="text" tabindex="1">Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, `and what is the use of a book,' thought Alice `without pictures or conversation?'</div>
+	<!--<textarea rows="4" cols="40" id="type_area"></textarea>-->
+</div>
 
-<script type="text/javascript">
-window.onload = function(){
-  var text = document.getElementById('text');
-  var type_area = document.getElementById('type_area');
+<p style="clear:both"><input id="dummy_input" autofocus></p>
 
-  text.innerHTML = '<div id="done"></div><div id="undone">' + text.innerHTML + '</div>';
+<ul id="errors"></ul>
+<ul id="deck"></ul>
 
-  type_area.onkeyup = function(){
-    if (text.textContent.indexOf(type_area.value) == 0) {
-      text.innerHTML = text.textContent.replace(type_area.value, '<span id="done">'+ type_area.value +'</span><span id="undone">') +'</span>';
-    } else {
-      var errors = type_area.value.length - document.getElementById('done').textContent.length;
-      if (errors) {
-        var undone = document.getElementById('undone');
-        undone.innerHTML = '<del>'+ undone.textContent.substr(0, errors) +'</del>' + undone.textContent.substr(errors);
-      }
-    }
-  };
-  type_area.focus();
-  type_area.select();
-};
-</script>
+<script src="typun.js"></script>
 </body></html>
