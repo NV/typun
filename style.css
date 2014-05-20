@@ -16,17 +16,8 @@ body {
 	white-space: pre-wrap;
 	margin-bottom: 1em;
 }
-#type_area {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	padding: 0;
-	margin: 0;
-	border: 0;
-	overflow: hidden;
-	opacity: 0;
+#text:focus {
+	outline: 1px solid #c8daee;
 }
 del {
 	background: red;
@@ -37,7 +28,7 @@ del {
 	color: #CCC;
 }
 .done + .undone {
-	border-left: 1px solid #999;
+	border-left: 1px solid rgba(0,0,0,.8);
 }
 #undone, .current {
 	border-left: 1px solid #999;
@@ -49,10 +40,6 @@ del {
 	top: 0;
 }
 
-.edit-on #type_area {
-	visibility: hidden;
-}
-
 .chunk {
 	position: relative;
 	z-index: 9;
@@ -60,4 +47,12 @@ del {
 
 #errors, #deck {
 	float: left;
+}
+
+
+#type_area {
+	display: none;
+}
+.edit-on #type_area {
+	display: inline-block;
 }

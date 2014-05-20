@@ -1,5 +1,5 @@
 var text = document.getElementById('text');
-//var type_area = document.getElementById('type_area');
+var type_area = document.getElementById('type_area');
 
 var position = 0;
 var data = '';
@@ -90,25 +90,8 @@ function setState(elem, state) {
 
 window.addEventListener('load', function(e) {
 	initialize();
+	text.focus();
 }, false);
-
-dummy_input.addEventListener('textInput', function(e) {
-	var character = data[position];
-	if (character === e.data) {
-		if (error_data === '') {
-			position++;
-		} else {
-			error_data += e.data;
-		}
-	} else {
-		if (error_data === '') {
-			addErrorWord(currentWord(data, position));
-		}
-		error_data += e.data;
-	}
-	redraw();
-	e.preventDefault();
-}, true);
 
 
 function addErrorWord(item) {
@@ -174,7 +157,20 @@ function lastNonWord(string, startPosition) {
 
 }
 
-dummy_input.addEventListener('keydown', function(e) {
+text.addEventListener('keypress', function(e) {
+	switch (e.which) {
+		case 13: //ENTER
+			sendChar('\n');
+			break;
+		default:
+			sendChar(String.fromCharCode(e.which));
+			break;
+	}
+	e.preventDefault();
+	e.stopPropagation();
+}, true);
+
+text.addEventListener('keydown', function(e) {
 //	console.log('KEYDOWN', e.which);
 	var code = e.which;
 	if (code === 8) {
@@ -207,8 +203,49 @@ dummy_input.addEventListener('keydown', function(e) {
 		e.stopPropagation();
 	} else if (code === 68 && e.ctrlKey) {
 		addToDeck(currentWord(data, position));
+	} else if (code === 39) {
+		position++;
+		redraw();
+	} else if (code === 37) {
+		if (error_data) {
+			error_data = error_data.slice(0, -1);
+		} else {
+			position--;
+		}
+		redraw();
 	}
 }, true);
+
+
+function sendChar(char) {
+	var expectedChar = data[position];
+	if (fuzzyMatch(expectedChar, char)) {
+		if (error_data === '') {
+			position++;
+		} else {
+			error_data += char;
+		}
+	} else {
+		if (error_data === '') {
+			addErrorWord(currentWord(data, position));
+		}
+		error_data += char;
+	}
+	redraw();
+}
+
+function fuzzyMatch(expected, actual) {
+	if (expected === actual) {
+		return true;
+	}
+	if ((expected === '“' || expected === '”') && actual === '"') {
+		return true;
+	}
+	if (expected === '’' && actual === '\'') {
+		return true;
+	}
+	return false;
+}
 
 
 function completed() {
@@ -218,7 +255,7 @@ function completed() {
 }
 
 function initialize() {
-	data = text.textContent;
+	data = cleanupText(type_area.value);
 	position = 0;
 	error_data = '';
 	chunks = [];
@@ -227,6 +264,11 @@ function initialize() {
 	redraw();
 }
 
+function cleanupText(text) {
+	return text
+		.replace(/[.]([A-Z])/g, '. $1')
+		.replace(/\r\n/g, '\n');
+}
 
 var edit = document.getElementById('edit');
 edit.onclick = function() {
@@ -240,6 +282,10 @@ edit.onclick = function() {
 		edit.textContent = 'Done';
 		document.body.classList.add('edit-on');
 		document.body.classList.remove('edit-off');
+		requestAnimationFrame(function() {
+			type_area.focus();
+			type_area.select();
+		});
 	}
 	text.contentEditable = !isOn;
 	edit._on = !isOn;
