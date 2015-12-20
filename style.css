@@ -35,9 +35,7 @@ del {
 	/*margin-right: -1px;*/
 }
 #edit {
-	position: absolute;
-	right: 0;
-	top: 0;
+	margin-bottom: .8em;
 }
 
 .chunk {
