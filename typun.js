@@ -96,6 +96,13 @@ window.addEventListener('load', function(e) {
 
 function addErrorWord(item) {
 	var errors = document.getElementById('errors');
+
+	if (errors.childNodes.length === 0) {
+		var p = document.createElement('p');
+		p.textContent = "Words with typos:";
+		errors.appendChild(p);
+	}
+
 	var li = document.createElement('li');
 	if (item.start) {
 		li.appendChild(document.createTextNode(item.start));
