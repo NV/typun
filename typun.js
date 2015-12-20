@@ -241,7 +241,7 @@ function fuzzyMatch(expected, actual) {
 	if ((expected === '“' || expected === '”') && actual === '"') {
 		return true;
 	}
-	if (expected === '’' && actual === '\'') {
+	if ((expected === '’' || expected === '‘') && actual === '\'') {
 		return true;
 	}
 	return false;
