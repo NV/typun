@@ -94,7 +94,7 @@ window.addEventListener('load', function(e) {
 }, false);
 
 
-function addErrorWord(item) {
+function addErrorWord(item, char) {
 	var errors = document.getElementById('errors');
 
 	if (errors.childNodes.length === 0) {
@@ -109,8 +109,11 @@ function addErrorWord(item) {
 	}
 	if (item.end) {
 		var del = document.createElement('del');
-		del.textContent = item.end[0];
+		del.textContent = char;
 		li.appendChild(del);
+		var ins = document.createElement('ins');
+		ins.textContent = item.end[0];
+		li.appendChild(ins);
 		if (item.end.length >= 2) {
 			li.appendChild(document.createTextNode(item.end.slice(1)));
 		}
@@ -208,7 +211,7 @@ text.addEventListener('keydown', function(e) {
 		}
 		e.preventDefault();
 		e.stopPropagation();
-	} else if (code === 68 && e.ctrlKey) {
+	} else if (code === 68 && e.ctrlKey) { // Ctrl-D
 		addToDeck(currentWord(data, position));
 	} else if (code === 39) {
 		position++;
@@ -234,7 +237,7 @@ function sendChar(char) {
 		}
 	} else {
 		if (error_data === '') {
-			addErrorWord(currentWord(data, position));
+			addErrorWord(currentWord(data, position), char);
 		}
 		error_data += char;
 	}

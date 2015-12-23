@@ -7,6 +7,10 @@ body {
 	position: relative;
 }
 
+.left {
+	float: left;
+}
+
 #text,
 #type_area {
 	font: 16px/24px sans-serif;
@@ -15,6 +19,7 @@ body {
 	color: #000;
 	white-space: pre-wrap;
 	margin-bottom: 1em;
+	max-width: 34em;
 }
 #text:focus {
 	outline: 1px solid #c8daee;
@@ -24,11 +29,18 @@ del {
 	color: white;
 	text-decoration: none;
 }
+ins {
+	color: rgb(0, 224, 0);
+}
 #done, .done {
 	color: #CCC;
 }
 .done + .undone {
 	border-left: 1px solid rgba(0,0,0,.8);
+}
+.done > .undone {
+	/*TODO: this should be fixed in JS */
+	border-left-width: 0;
 }
 #undone, .current {
 	border-left: 1px solid #999;
@@ -52,5 +64,6 @@ del {
 	display: none;
 }
 .edit-on #type_area {
-	display: inline-block;
+    display: inline-block;
+    width: 34em
 }
