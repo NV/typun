@@ -35,8 +35,18 @@ ins {
 #done, .done {
 	color: #CCC;
 }
-.done + .undone {
-	border-left: 1px solid rgba(0,0,0,.8);
+.done + .undone::before {
+	content: '';
+	line-height: 1.2em;
+	overflow: hidden;
+	width: 0;
+	display: inline;
+	vertical-align: middle;
+	outline: 1px solid hsla(205, 100%, 50%, 0.9);
+	margin-top: -3px;
+}
+.done > .undone::before {
+	display: none;
 }
 .done > .undone {
 	/*TODO: this should be fixed in JS */
@@ -57,6 +67,7 @@ ins {
 
 #errors, #deck {
 	float: left;
+	font: 12px/1.2 sans-serif;
 }
 
 
