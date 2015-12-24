@@ -37,13 +37,12 @@ ins {
 }
 .done + .undone::before {
 	content: '';
-	line-height: 1.2em;
 	overflow: hidden;
 	width: 0;
 	display: inline;
-	vertical-align: middle;
+	vertical-align: baseline;
 	outline: 1px solid hsla(205, 100%, 50%, 0.9);
-	margin-top: -3px;
+	position: relative;
 }
 .done > .undone::before {
 	display: none;
