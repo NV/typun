@@ -168,6 +168,8 @@ function lastNonWord(string, startPosition) {
 }
 
 text.addEventListener('keypress', function(e) {
+	if (e.metaKey)
+		return;
 	switch (e.which) {
 		case 13: //ENTER
 			sendChar('\n');
