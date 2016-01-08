@@ -22,7 +22,7 @@ body {
 	max-width: 34em;
 }
 #text:focus {
-	outline: 1px solid #c8daee;
+	outline: none;
 }
 del {
 	background: hsl(0, 80%, 59%);
@@ -43,8 +43,11 @@ ins {
 	width: 0;
 	display: inline;
 	vertical-align: baseline;
-	outline: 1px solid hsla(205, 100%, 50%, 0.9);
 	position: relative;
+
+	animation-duration: 1s;
+	animation-name: cursor-blink;
+	animation-iteration-count: infinite;
 }
 .done > .undone::before {
 	display: none;
@@ -78,4 +81,9 @@ ins {
 .edit-on #type_area {
     display: inline-block;
     width: 34em
+}
+
+@keyframes cursor-blink {
+	from {outline: 1px solid hsla(205, 100%, 50%, 0.9)}
+	to   {outline: 1px solid hsla(205, 100%, 50%, 0.6)}
 }
