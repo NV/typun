@@ -1,6 +1,6 @@
 body {
-	padding: 1em;
-	/* -webkit-user-modify: read-write-plaintext-only; */
+	margin-top: 1.2em;
+	margin-left: 5vw;
 }
 
 #wrap {
@@ -79,8 +79,8 @@ ins {
 	display: none;
 }
 .edit-on #type_area {
-    display: inline-block;
-    width: 34em
+	display: inline-block;
+	width: 34em
 }
 
 @keyframes cursor-blink {
