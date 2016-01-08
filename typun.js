@@ -91,6 +91,7 @@ function setState(elem, state) {
 window.addEventListener('load', function(e) {
 	initialize();
 	text.focus();
+	advance(5);
 }, false);
 
 
@@ -167,7 +168,7 @@ function lastNonWord(string, startPosition) {
 
 }
 
-text.addEventListener('keypress', function(e) {
+document.body.addEventListener('keypress', function(e) {
 	if (e.metaKey)
 		return;
 	switch (e.which) {
@@ -180,9 +181,9 @@ text.addEventListener('keypress', function(e) {
 	}
 	e.preventDefault();
 	e.stopPropagation();
-}, true);
+}, false);
 
-text.addEventListener('keydown', function(e) {
+document.body.addEventListener('keydown', function(e) {
 //	console.log('KEYDOWN', e.which);
 	var code = e.which;
 	if (code === 8) {
@@ -216,8 +217,7 @@ text.addEventListener('keydown', function(e) {
 	} else if (code === 68 && e.ctrlKey) { // Ctrl-D
 		addToDeck(currentWord(data, position));
 	} else if (code === 39) {
-		position++;
-		redraw();
+		advance(1);
 	} else if (code === 37) {
 		if (error_data) {
 			error_data = error_data.slice(0, -1);
@@ -226,7 +226,13 @@ text.addEventListener('keydown', function(e) {
 		}
 		redraw();
 	}
-}, true);
+}, false);
+
+
+function advance(n) {
+	position += n;
+	redraw();
+}
 
 
 function sendChar(char) {
@@ -250,12 +256,23 @@ function fuzzyMatch(expected, actual) {
 	if (expected === actual) {
 		return true;
 	}
+
+	var regEmptySpace = /\s/;
+	if (regEmptySpace.test(expected) && regEmptySpace.test(actual)) {
+		return true;
+	}
+
 	if ((expected === '“' || expected === '”') && actual === '"') {
 		return true;
 	}
 	if ((expected === '’' || expected === '‘') && actual === '\'') {
 		return true;
 	}
+
+	if (expected === "…" && actual === ".") {
+		return true;
+	}
+
 	return false;
 }
 
@@ -302,3 +319,16 @@ edit.onclick = function() {
 	text.contentEditable = !isOn;
 	edit._on = !isOn;
 };
+
+
+function stopKeydownPropagation(element) {
+	function stop(e) {
+		e.stopPropagation();
+	}
+
+	element.addEventListener("keydown", stop, true);
+	element.addEventListener("keypress", stop, true);
+}
+
+stopKeydownPropagation(type_area);
+stopKeydownPropagation(edit);
