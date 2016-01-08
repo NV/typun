@@ -25,12 +25,14 @@ body {
 	outline: 1px solid #c8daee;
 }
 del {
-	background: red;
-	color: white;
+	background: hsl(0, 80%, 59%);
+	color: #FFFEAB;
 	text-decoration: none;
 }
 ins {
-	color: rgb(0, 224, 0);
+	color: #3F5A00;
+	background: hsl(115, 100%, 88%);
+	text-decoration: none;
 }
 #done, .done {
 	color: #CCC;
