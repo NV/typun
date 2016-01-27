@@ -1,0 +1,52 @@
+body {
+	font: 14px sans-serif;
+	margin: 0;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	background: #EEE;
+	padding: 0.8em 1em 0.8em;
+	border-bottom: 1px solid hsl(0, 0%, 86%);
+}
+
+#input_text {
+	width: 100%;
+	box-sizing: border-box;
+	margin-right: 1.4em;
+}
+
+.train-data-form {
+	display: flex;
+	flex-direction: column;
+	white-space: nowrap;
+	font-size: 12px;
+}
+
+#train_data {
+	display: block;
+	min-width: 25vw;
+	margin-bottom: 0.5em;
+	flex-grow: 1;
+}
+
+#output {
+	white-space: pre-wrap;
+	max-width: 32em;
+	margin: 1em auto 0;
+	font: 18px/1.4 serif;
+}
+
+.rare {
+	color: hsl(0, 100%, 34%);
+}
+
+.not-word {
+	color: hsl(214, 78%, 57%);
+}
+
+.token:hover {
+	outline: 1px solid hsl(49, 100%, 50%);
+	background: hsl(60, 100%, 85%);
+}
