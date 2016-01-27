@@ -8,6 +8,8 @@ var wordsMap = (function(words) {
 	return result;
 })(words);
 
+words.length = 0;
+
 
 function redraw() {
 	var input_text = document.getElementById("input_text");
@@ -57,6 +59,7 @@ function render(tokens) {
 		if (!token.isWord) {
 			span.classList.add("not-word");
 			span.textContent = token.data;
+			span.title = token.data + "\nNot a word";
 		} else {
 			var word = normalizeWord(token.data);
 			var score = wordsMap.get(word);
@@ -67,7 +70,7 @@ function render(tokens) {
 				styleCommonWord(span, score, dictSize);
 			} else {
 				span.classList.add("rare");
-				span.title = word + "\nScore: >10,000";
+				span.title = word + "\nScore: >" + dictSize;
 			}
 		}
 
