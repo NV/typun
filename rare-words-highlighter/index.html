@@ -7,29 +7,22 @@
 </head>
 <body>
 <div class="row">
-	<textarea id="input_text">What is it?
+	<textarea id="input_text">Where am I?
 
-It highlights uncommon and mispeled words as red.
+This tool highlights uncommon and mispeled words as red.
 Common words are light grey: the, about, find, last, copyright.
 Less common words are dark grey: TCO, Lumix, substring, phenotypes, conspiracies.
 
 Why did I make it?
 
-I've been using Google search as a spell checker for years.
+I've been using Google search as a spell checker for years. When I search for "colocual" it corrects the word for me: "Showing results for colloquial". [Todo: make an example with a sentence fragment]
 
-When I search for "colocual" it shows "Showing results for colloquial".
-[Todo: better example]
+It's a lot of hassle to open a new browser tab and copy/paste sentence fragments one by one. It could be better.
 
-How does it work?
-It uses Google's database of 50k most common words sorted by usage frequency.
-It has proper nouns (Google), slang (todo: add an example), and popular
-lexemes (not just "go" but also "went", "gone", "going", etc.).
+How does this thing work?
+It uses Google's database of 50k most common words sorted by usage frequency. It has proper nouns (UK, Microsoft, Bob), slang (todo: add an example), and popular lexemes (not just "go" but also "goes", "went", "gone", "going", etc.).
 
-(Unfortunately, it includes commonly misspelled words such as "doesnt"
-but there aren't too many of them.)
-
-The first, most common word in that database is "the".
-The 50k word is "paa" (I don't know what it means).
+Currently, it only checks words one by one. However, Google has an n-gram database that, I think, can be used to make a spell checker that would spot errors like "I has" or "I just had a lunch.".
 </textarea>
 <form class="train-data-form" onsubmit="submitTrainData(); return false;">
 	<textarea name="train_data" id="train_data"></textarea>
