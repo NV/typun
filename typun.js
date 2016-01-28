@@ -184,7 +184,6 @@ document.body.addEventListener('keypress', function(e) {
 }, false);
 
 document.body.addEventListener('keydown', function(e) {
-//	console.log('KEYDOWN', e.which);
 	var code = e.which;
 	if (code === 8) {
 		if (e.altKey) {
@@ -225,12 +224,24 @@ document.body.addEventListener('keydown', function(e) {
 			position--;
 		}
 		redraw();
+	} else if (code === 78 && (e.ctrlKey || e.altKey)) { // Ctrl-N
+		speakClauseAt(position);
+		e.preventDefault();
 	}
 }, false);
 
 
 function advance(n) {
 	position += n;
+
+	// FIXME: Need a better clause splitters
+	//if (position < data.length) {
+	//	var currentChar = data[position - 1];
+	//	if (!/[\w\d'’ \t-]/.test(currentChar)) {
+	//		speakClauseAt(position);
+	//	}
+	//}
+
 	redraw();
 }
 
@@ -239,7 +250,7 @@ function sendChar(char) {
 	var expectedChar = data[position];
 	if (fuzzyMatch(expectedChar, char)) {
 		if (error_data === '') {
-			position++;
+			advance(1);
 		} else {
 			error_data += char;
 		}
@@ -328,6 +339,43 @@ function stopKeydownPropagation(element) {
 
 	element.addEventListener("keydown", stop, true);
 	element.addEventListener("keypress", stop, true);
+}
+
+
+var lastSpokenClausePos = 0;
+function speakClauseAt(charPos) {
+	var text = data.slice(charPos);
+
+	var trimmed = text.replace(/^[\s\n]+/, "");
+
+	var trimmedPos = charPos + (text.length - trimmed.length);
+	if (trimmedPos === lastSpokenClausePos) {
+		return;
+	}
+	lastSpokenClausePos = trimmedPos;
+
+	var match = text.match(/[\w '’-]+/); // Fails on "5.4$"
+	//var match = text.match(/[\s\n.,:;?!—]+(.+?)[.,:;?!—][\s\n.,:;?!—]/);
+	var clause = "";
+	if (match && match[0]) {
+		clause = match[0];
+		console.info(clause);
+		speak(clause);
+	}
+}
+
+function speak(text) {
+	var msg = new SpeechSynthesisUtterance();
+	var voices = window.speechSynthesis.getVoices();
+	msg.voice = voices[0];
+	msg.voiceURI = 'native';
+	//msg.volume = 1; // 0 to 1
+	//msg.rate = 1; // 0.1 to 10
+	//msg.pitch = 1; //0 to 2
+	msg.text = text;
+	msg.lang = 'en-US';
+
+	speechSynthesis.speak(msg);
 }
 
 stopKeydownPropagation(type_area);
