@@ -225,7 +225,7 @@ document.body.addEventListener('keydown', function(e) {
 		}
 		redraw();
 	} else if (code === 78 && (e.ctrlKey || e.altKey)) { // Ctrl-N
-		speakClauseAt(position);
+		speakClauseAt(position, true);
 		e.preventDefault();
 	}
 }, false);
@@ -235,12 +235,12 @@ function advance(n) {
 	position += n;
 
 	// FIXME: Need a better clause splitters
-	//if (position < data.length) {
-	//	var currentChar = data[position - 1];
-	//	if (!/[\w\d'’ \t-]/.test(currentChar)) {
-	//		speakClauseAt(position);
-	//	}
-	//}
+	if (position < data.length) {
+		var currentChar = data[position - 1];
+		if (!/[\w\d'’ \t-]/.test(currentChar)) {
+			speakClauseAt(position);
+		}
+	}
 
 	redraw();
 }
@@ -343,13 +343,13 @@ function stopKeydownPropagation(element) {
 
 
 var lastSpokenClausePos = 0;
-function speakClauseAt(charPos) {
+function speakClauseAt(charPos, force) {
 	var text = data.slice(charPos);
 
 	var trimmed = text.replace(/^[\s\n]+/, "");
 
 	var trimmedPos = charPos + (text.length - trimmed.length);
-	if (trimmedPos === lastSpokenClausePos) {
+	if (!force && trimmedPos === lastSpokenClausePos) {
 		return;
 	}
 	lastSpokenClausePos = trimmedPos;
@@ -367,15 +367,20 @@ function speakClauseAt(charPos) {
 function speak(text) {
 	var msg = new SpeechSynthesisUtterance();
 	var voices = window.speechSynthesis.getVoices();
-	msg.voice = voices[0];
+	msg.voice = voices[rand(0, voices.length - 1)];
 	msg.voiceURI = 'native';
 	//msg.volume = 1; // 0 to 1
 	//msg.rate = 1; // 0.1 to 10
-	//msg.pitch = 1; //0 to 2
+	msg.pitch = 2; //0 to 2
 	msg.text = text;
 	msg.lang = 'en-US';
 
 	speechSynthesis.speak(msg);
+}
+
+function rand(min, max) {
+	var diff = max - min;
+	return Math.round(min + Math.random() * diff);
 }
 
 stopKeydownPropagation(type_area);
