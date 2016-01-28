@@ -45,9 +45,10 @@ ins {
 	vertical-align: baseline;
 	position: relative;
 
-	animation-duration: 1s;
-	animation-name: cursor-blink;
-	animation-iteration-count: infinite;
+	outline: 1px solid hsla(205, 100%, 50%, 0.9)
+	/*animation-duration: 1s;*/
+	/*animation-name: cursor-blink;*/
+	/*animation-iteration-count: infinite;*/
 }
 .done > .undone::before {
 	display: none;
