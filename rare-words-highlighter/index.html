@@ -7,15 +7,29 @@
 </head>
 <body>
 <div class="row">
-	<textarea id="input_text">Common words are light grey: the, about, find, last, copyright.
-Less common words are dark grey: tco, lumix, substring, phenotypes, conspiracies.
-Uncommon and misspeled words are red: quokka.
+	<textarea id="input_text">What is it?
 
-—
+It highlights uncommon and mispeled words as red.
+Common words are light grey: the, about, find, last, copyright.
+Less common words are dark grey: TCO, Lumix, substring, phenotypes, conspiracies.
 
-Real world example:
+Why did I make it?
 
-Skeptics of manmade climate change offer various natural causes to explain why the Earth has warmed 1.4 degrees Fahrenheit since 1880. But can these account for the planet’s rising temperature? Scroll down to see show how much different factors, both natural and industrial, contribute to global warming, based on findings from NASA’s Goddard Institute for Space Studies.
+I've been using Google search as a spell checker for years.
+
+When I search for "colocual" it shows "Showing results for colloquial".
+[Todo: better example]
+
+How does it work?
+It uses Google's database of 50k most common words sorted by usage frequency.
+It has proper nouns (Google), slang (todo: add an example), and popular
+lexemes (not just "go" but also "went", "gone", "going", etc.).
+
+(Unfortunately, it includes commonly misspelled words such as "doesnt"
+but there aren't too many of them.)
+
+The first, most common word in that database is "the".
+The 50k word is "paa" (I don't know what it means).
 </textarea>
 <form class="train-data-form" onsubmit="submitTrainData(); return false;">
 	<textarea name="train_data" id="train_data"></textarea>

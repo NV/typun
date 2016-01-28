@@ -8,7 +8,7 @@ body {
 	flex-direction: row;
 	background: #EEE;
 	padding: 0.8em 1em 0.8em;
-	border-bottom: 1px solid hsl(0, 0%, 86%);
+	border-bottom: 1px solid hsl(0, 0%, 80%);
 }
 
 #input_text {

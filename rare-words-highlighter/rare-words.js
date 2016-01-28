@@ -108,7 +108,6 @@ function normalizeWord(word) {
 		"cannot": "can",
 
 		"you're": "you",
-		"we're": "we",
 		"they're": "they"
 	};
 
