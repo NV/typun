@@ -37,7 +37,7 @@ ins {
 #done, .done {
 	color: #CCC;
 }
-.done + .undone::before {
+.paragraph > .undone::before {
 	content: '';
 	overflow: hidden;
 	width: 0;
@@ -45,7 +45,7 @@ ins {
 	vertical-align: baseline;
 	position: relative;
 
-	outline: 1px solid hsla(205, 100%, 50%, 0.9)
+	border: 1px solid hsla(205, 100%, 50%, 0.9); /* Latest WebKit doesn't display outline :( */
 	/*animation-duration: 1s;*/
 	/*animation-name: cursor-blink;*/
 	/*animation-iteration-count: infinite;*/
@@ -65,8 +65,9 @@ ins {
 	margin-bottom: .8em;
 }
 
-.chunk {
+.paragraph {
 	position: relative;
+	margin: 0;
 	z-index: 9;
 }
 

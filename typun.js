@@ -1,56 +1,49 @@
 var text = document.getElementById('text');
 var type_area = document.getElementById('type_area');
 
+// Text caret position
 var position = 0;
+
 var data = '';
 var error_data = '';
 
-var CHUNK_SIZE = 100;
-var chunks = [];
 
-
-function splitOnChunks(data, size) {
-	var chunks = [];
-	var start = 0;
-	var length = data.length;
-	while (start < length) {
-		chunks.push(data.slice(start, start + size));
-		start += size;
-	}
-	return chunks;
-}
-
-var chunkElems = [];
 var prev_position = 0;
 function redraw() {
-	if (chunks.length === 0 && data.length > 0) {
-		chunks = splitOnChunks(data, CHUNK_SIZE);
+	if (paragraphs.length === 0 && data.length > 0) {
+		var textChunks = splitIntoParagraphs(data);
 		var frag = document.createDocumentFragment();
-		for (var i = 0; i < chunks.length; i++) {
-			var span = document.createElement('span');
-			span.className = 'chunk';
-			span.textContent = chunks[i];
-			frag.appendChild(span);
-			chunkElems.push(span);
+		for (var i = 0; i < textChunks.length; i++) {
+			var textChunk = textChunks[i];
+			var div = document.createElement('p');
+			div.className = 'paragraph';
+			div.textContent = textChunks[i];
+			frag.appendChild(div);
+			paragraphs.push({
+				text: textChunk,
+				elem: div
+			});
 		}
 		text.textContent = '';
 		text.appendChild(frag);
 	}
 
-	var doneCount = Math.floor(position / CHUNK_SIZE);
-	var doneReminder = position % CHUNK_SIZE;
-	for (var i = 0; i < chunkElems.length; i++) {
-		var chunkElem = chunkElems[i];
-		if (i < doneCount) {
-			setState(chunkElem, 'done')
-		} else if (i === doneCount) {
-			var start = CHUNK_SIZE * i;
-			var mid = start + doneReminder;
-			var end = CHUNK_SIZE * (i + 1);
-			chunkElem.innerHTML = doneElem(data.slice(start, mid)) + delElem(error_data) + undoneElem(data.slice(mid, end));
+	var charIndex = 0;
+	for (var i = 0; i < paragraphs.length; i++) {
+
+		var paragraph = paragraphs[i];
+		var paragraphElem = paragraph.elem;
+		if (position >= charIndex + paragraph.text.length) {
+			setState(paragraphElem, 'done')
+		} else if (position >= charIndex) {
+			var mid = position - charIndex;
+			paragraphElem.innerHTML = doneElem(paragraph.text.slice(0, mid)) + delElem(error_data) + undoneElem(paragraph.text.slice(mid));
+			setState(paragraphElem, 'undone');
 		} else {
-			setState(chunkElem, 'undone');
+			setState(paragraphElem, 'undone');
 		}
+
+		charIndex += paragraph.text.length;
 	}
 
 	prev_position = position;
@@ -95,7 +88,7 @@ window.addEventListener('load', function(e) {
 }, false);
 
 
-function addErrorWord(item, char) {
+function addErrorWord(wordPair, char) {
 	var errors = document.getElementById('errors');
 
 	if (errors.childNodes.length === 0) {
@@ -105,21 +98,23 @@ function addErrorWord(item, char) {
 	}
 
 	var li = document.createElement('li');
-	if (item.start) {
-		li.appendChild(document.createTextNode(item.start));
+	if (wordPair.start) {
+		li.appendChild(document.createTextNode(wordPair.start));
 	}
-	if (item.end) {
+	if (wordPair.end) {
 		var del = document.createElement('del');
 		del.textContent = char;
 		li.appendChild(del);
 		var ins = document.createElement('ins');
-		ins.textContent = item.end[0];
+		ins.textContent = wordPair.end[0];
 		li.appendChild(ins);
-		if (item.end.length >= 2) {
-			li.appendChild(document.createTextNode(item.end.slice(1)));
+		if (wordPair.end.length >= 2) {
+			li.appendChild(document.createTextNode(wordPair.end.slice(1)));
 		}
 	}
 	errors.appendChild(li);
+
+	speak(wordPair.start + wordPair.end, {voice: "Alex"});
 }
 
 function addToDeck(item) {
@@ -238,7 +233,7 @@ function advance(n) {
 	if (position < data.length) {
 		var currentChar = data[position - 1];
 		if (!/[\w\d'’ \t-]/.test(currentChar)) {
-			speakClauseAt(position);
+			speakClauseAt(position, false);
 		}
 	}
 
@@ -294,19 +289,41 @@ function completed() {
 	document.body.appendChild(h1);
 }
 
+var paragraphs = [];
+
 function initialize() {
 	data = cleanupText(type_area.value);
+	paragraphs = [];
 	position = 0;
 	error_data = '';
-	chunks = [];
-	chunkElems = [];
+
 	prev_position = 0;
 	redraw();
 }
 
+function splitIntoParagraphs(text) {
+	var parts = [];
+	var wordsRegEx = /(\s*\n)+/g;
+	var lastIndex = 0;
+	var result;
+
+	while((result = wordsRegEx.exec(text)) !== null) {
+		var index = result.index;
+		var data = result[0];
+		if (index > 0 && lastIndex !== index) {
+			parts.push(text.slice(lastIndex, index + data.length));
+		}
+
+		lastIndex = index + data.length;
+	}
+
+	return parts;
+}
+
+
 function cleanupText(text) {
 	return text
-		.replace(/[.]([A-Z])/g, '. $1')
+		//.replace(/[.]([A-Z])/g, '. $1')
 		.replace(/\r\n/g, '\n');
 }
 
@@ -343,7 +360,7 @@ function stopKeydownPropagation(element) {
 
 
 var lastSpokenClausePos = 0;
-function speakClauseAt(charPos, force) {
+function speakClauseAt(charPos, force, options) {
 	var text = data.slice(charPos);
 
 	var trimmed = text.replace(/^[\s\n]+/, "");
@@ -359,24 +376,63 @@ function speakClauseAt(charPos, force) {
 	var clause = "";
 	if (match && match[0]) {
 		clause = match[0];
-		console.info(clause);
-		speak(clause);
+		speak(clause, options);
 	}
 }
 
-function speak(text) {
+var voicesMap = null;
+
+function getVoices() {
+	var voicesMap = {};
+	var googleChromeDefault = null;
+	var nativeDefault = null;
+	window.speechSynthesis.getVoices().forEach(function(voice) {
+		if (voice.lang === "en-US") {
+			voicesMap[voice.name] = voice;
+
+			if (voice.name === "Google US English") {
+				googleChromeDefault = voice;
+			}
+
+			if (voice.default) {
+				nativeDefault = voice;
+			}
+		}
+	});
+	voicesMap["default"] = googleChromeDefault || nativeDefault;
+	return voicesMap;
+}
+
+
+function speak(text, options) {
+	if (!voicesMap) {
+		voicesMap = getVoices();
+	}
+
+	if (!options)
+		options = {};
+
 	var msg = new SpeechSynthesisUtterance();
-	var voices = window.speechSynthesis.getVoices();
-	msg.voice = voices[rand(0, voices.length - 1)];
+
+	var voice = options.voice && voicesMap[options.voice] || voicesMap.default;
+	msg.voice = voice;
 	msg.voiceURI = 'native';
-	//msg.volume = 1; // 0 to 1
-	//msg.rate = 1; // 0.1 to 10
-	msg.pitch = 2; //0 to 2
+
+	msg.volume = options.volume || 1; // 0 to 1
+	msg.rate = options.rate || 1; // 0.1 to 10
+	msg.pitch = options.pitch || 1; //0 to 2
 	msg.text = text;
 	msg.lang = 'en-US';
 
 	speechSynthesis.speak(msg);
+
+	if (voice) {
+		console.info(voice.name + ": " + text);
+	} else {
+		console.warn("SpeechSynthesisUtterance doesn't work :(");
+	}
 }
+
 
 function rand(min, max) {
 	var diff = max - min;
