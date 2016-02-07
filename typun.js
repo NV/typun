@@ -386,12 +386,13 @@ function getVoices() {
 	var voicesMap = {};
 	var googleChromeDefault = null;
 	var nativeDefault = null;
+	console.log(window.speechSynthesis.getVoices());
 	window.speechSynthesis.getVoices().forEach(function(voice) {
 		if (voice.lang === "en-US") {
 			voicesMap[voice.name] = voice;
 
 			if (voice.name === "Google US English") {
-				googleChromeDefault = voice;
+				nativeDefault = googleChromeDefault = voice;
 			}
 
 			if (voice.default) {
@@ -399,28 +400,34 @@ function getVoices() {
 			}
 		}
 	});
-	voicesMap["default"] = googleChromeDefault || nativeDefault;
-	return voicesMap;
+	var defaultVoice = googleChromeDefault || nativeDefault;
+	if (defaultVoice) {
+		voicesMap["default"] = defaultVoice;
+		return voicesMap
+	}
+	return null;
 }
 
 
 function speak(text, options) {
-	if (!voicesMap) {
-		voicesMap = getVoices();
-	}
-
 	if (!options)
 		options = {};
 
 	var msg = new SpeechSynthesisUtterance();
 
-	var voice = options.voice && voicesMap[options.voice] || voicesMap.default;
-	msg.voice = voice;
+	if (!voicesMap) {
+		voicesMap = getVoices();
+	}
+
+	var voice = options.voice ? voicesMap[options.voice] : (voicesMap && voicesMap.default);
+	if (voice) {
+		msg.voice = voice;
+	}
 	msg.voiceURI = 'native';
 
 	msg.volume = options.volume || 1; // 0 to 1
-	msg.rate = options.rate || 1; // 0.1 to 10
-	msg.pitch = options.pitch || 1; //0 to 2
+	//msg.rate = options.rate || 1; // 0.1 to 10
+	//msg.pitch = options.pitch || 1; //0 to 2
 	msg.text = text;
 	msg.lang = 'en-US';
 
