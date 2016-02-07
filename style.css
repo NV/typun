@@ -1,6 +1,5 @@
 body {
-	margin-top: 1.2em;
-	margin-left: 5vw;
+	margin-top: 0;
 }
 
 #wrap {
@@ -9,6 +8,7 @@ body {
 
 .left {
 	float: left;
+	margin-top: 1em;
 }
 
 #text,
@@ -35,7 +35,7 @@ ins {
 	text-decoration: none;
 }
 #done, .done {
-	color: #CCC;
+	color: hsl(0, 0%, 75%);
 }
 .paragraph > .undone::before {
 	content: '';
@@ -63,12 +63,28 @@ ins {
 }
 #edit {
 	margin-bottom: .8em;
+	margin-left: 5vw;
 }
 
 .paragraph {
 	position: relative;
 	margin: 0;
+	padding-left: 5vw;
+	padding-right: 3vw;
 	z-index: 9;
+}
+
+.paragraph.done {
+	background-color: hsl(0, 0%, 98%)
+}
+
+.paragraph + .paragraph {
+	border-top: 0.51px solid hsl(46, 50%, 94%);
+}
+
+.paragraph:hover {
+	background: hsl(46, 100%, 97%);
+	outline: 0.51px solid hsl(46, 100%, 70%);
 }
 
 #errors, #deck {
@@ -79,6 +95,7 @@ ins {
 
 #type_area {
 	display: none;
+	margin-left: 5vw;
 }
 .edit-on #type_area {
 	display: inline-block;
