@@ -8,6 +8,13 @@ var data = '';
 var error_data = '';
 
 
+function splitIntoClauses(text) {
+	var reClause = /.+?(?:[^\w\d%$][\n\s]|\s\(|\)\s|$)/;
+	var matches = text.match(reClause);
+	return matches ? matches : [];
+}
+
+
 var prev_position = 0;
 function redraw() {
 	if (paragraphs.length === 0 && data.length > 0) {
@@ -15,14 +22,31 @@ function redraw() {
 		var frag = document.createDocumentFragment();
 		for (var i = 0; i < textChunks.length; i++) {
 			var textChunk = textChunks[i];
-			var div = document.createElement('p');
-			div.className = 'paragraph';
-			div.textContent = textChunks[i];
-			frag.appendChild(div);
-			paragraphs.push({
+			var p = document.createElement('p');
+			p.className = 'paragraph';
+			//p.textContent = textChunks[i];
+			frag.appendChild(p);
+
+			var paragraph = {
 				text: textChunk,
-				elem: div
-			});
+				elem: p,
+				clauses: []
+			};
+
+			paragraphs.push(paragraph);
+
+			var pClauses = Text.splitIntoClauses(textChunk);
+			for (var j = 0; j < pClauses.length; j++) {
+				var span = document.createElement("span");
+				span.textContent = pClauses[j];
+				var clause = {
+					text: pClauses[i],
+					elem: span
+				};
+				p.appendChild(span);
+				paragraph.clauses.push(clause);
+			}
+
 		}
 		text.textContent = '';
 		text.appendChild(frag);
@@ -34,7 +58,7 @@ function redraw() {
 		var paragraph = paragraphs[i];
 		var paragraphElem = paragraph.elem;
 		if (position >= charIndex + paragraph.text.length) {
-			setState(paragraphElem, 'done')
+			setState(paragraphElem, 'done');
 		} else if (position >= charIndex) {
 			var mid = position - charIndex;
 			paragraphElem.innerHTML = doneElem(paragraph.text.slice(0, mid)) + delElem(error_data) + undoneElem(paragraph.text.slice(mid));
@@ -371,11 +395,13 @@ function speakClauseAt(charPos, force, options) {
 	}
 	lastSpokenClausePos = trimmedPos;
 
-	var match = text.match(/[\w '’-]+/); // Fails on "5.4$"
+	// This should handle cases like "$5.4" and "foo (bar)".
+	var match = text.match(/.+?(?:[^\w\d%$][\n\s]|\s\(|\)\s|$)/);
+	//var match = text.match(/[\w '’-]+/); // Fails on "5.4$"
 	//var match = text.match(/[\s\n.,:;?!—]+(.+?)[.,:;?!—][\s\n.,:;?!—]/);
 	var clause = "";
 	if (match && match[0]) {
-		clause = match[0];
+		clause = match[0].slice(0, -1);
 		speak(clause, options);
 	}
 }
@@ -386,7 +412,6 @@ function getVoices() {
 	var voicesMap = {};
 	var googleChromeDefault = null;
 	var nativeDefault = null;
-	console.log(window.speechSynthesis.getVoices());
 	window.speechSynthesis.getVoices().forEach(function(voice) {
 		if (voice.lang === "en-US") {
 			voicesMap[voice.name] = voice;
